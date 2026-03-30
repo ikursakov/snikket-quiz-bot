@@ -1,0 +1,11 @@
+{
+  "xmpp": {
+    "jid": "quizbot@chat.example.org"
+  },
+  "users": {
+    "user@chat.example.org": "username"
+  },
+  "permissions": {
+    "username": ["username"]
+  }
+}

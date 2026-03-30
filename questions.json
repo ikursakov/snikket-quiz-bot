@@ -1,0 +1,226 @@
+[
+    {
+        "id": "de_cap_1",
+        "category": "deutschland",
+        "difficulty": "easy",
+        "question": "Was ist die Hauptstadt von Baden-Württemberg?",
+        "options": [
+            "Wiesbaden",
+            "Stuttgart",
+            "Saarbrücken",
+            "Hamburg"
+        ],
+        "answer": 1,
+        "explanation": "Stuttgart ist die Hauptstadt von Baden-Württemberg"
+    },
+    {
+        "id": "de_cap_2",
+        "category": "deutschland",
+        "difficulty": "easy",
+        "question": "Was ist die Hauptstadt von Bayern?",
+        "options": [
+            "Schwerin",
+            "Kiel",
+            "München",
+            "Magdeburg"
+        ],
+        "answer": 2,
+        "explanation": "München ist die Hauptstadt von Bayern"
+    },
+    {
+        "id": "de_cap_3",
+        "category": "deutschland",
+        "difficulty": "easy",
+        "question": "Was ist die Hauptstadt von Berlin?",
+        "options": [
+            "Berlin",
+            "Erfurt",
+            "Mainz",
+            "Magdeburg"
+        ],
+        "answer": 0,
+        "explanation": "Berlin ist die Hauptstadt von Berlin"
+    },
+    {
+        "id": "de_cap_4",
+        "category": "deutschland",
+        "difficulty": "easy",
+        "question": "Was ist die Hauptstadt von Brandenburg?",
+        "options": [
+            "Bremen",
+            "Potsdam",
+            "Saarbrücken",
+            "München"
+        ],
+        "answer": 1,
+        "explanation": "Potsdam ist die Hauptstadt von Brandenburg"
+    },
+    {
+        "id": "de_cap_5",
+        "category": "deutschland",
+        "difficulty": "easy",
+        "question": "Was ist die Hauptstadt von Bremen?",
+        "options": [
+            "Hannover",
+            "Magdeburg",
+            "Bremen",
+            "Mainz"
+        ],
+        "answer": 2,
+        "explanation": "Bremen ist die Hauptstadt von Bremen"
+    },
+    {
+        "id": "de_cap_6",
+        "category": "deutschland",
+        "difficulty": "easy",
+        "question": "Was ist die Hauptstadt von Hamburg?",
+        "options": [
+            "Hannover",
+            "Potsdam",
+            "Kiel",
+            "Hamburg"
+        ],
+        "answer": 3,
+        "explanation": "Hamburg ist die Hauptstadt von Hamburg"
+    },
+    {
+        "id": "de_cap_7",
+        "category": "deutschland",
+        "difficulty": "easy",
+        "question": "Was ist die Hauptstadt von Hessen?",
+        "options": [
+            "Berlin",
+            "Mainz",
+            "Wiesbaden",
+            "München"
+        ],
+        "answer": 2,
+        "explanation": "Wiesbaden ist die Hauptstadt von Hessen"
+    },
+    {
+        "id": "de_cap_8",
+        "category": "deutschland",
+        "difficulty": "easy",
+        "question": "Was ist die Hauptstadt von Mecklenburg-Vorpommern?",
+        "options": [
+            "Schwerin",
+            "Saarbrücken",
+            "Mainz",
+            "Hamburg"
+        ],
+        "answer": 0,
+        "explanation": "Schwerin ist die Hauptstadt von Mecklenburg-Vorpommern"
+    },
+    {
+        "id": "de_cap_9",
+        "category": "deutschland",
+        "difficulty": "easy",
+        "question": "Was ist die Hauptstadt von Niedersachsen?",
+        "options": [
+            "Potsdam",
+            "Hannover",
+            "Bremen",
+            "Mainz"
+        ],
+        "answer": 1,
+        "explanation": "Hannover ist die Hauptstadt von Niedersachsen"
+    },
+    {
+        "id": "de_cap_10",
+        "category": "deutschland",
+        "difficulty": "easy",
+        "question": "Was ist die Hauptstadt von Nordrhein-Westfalen?",
+        "options": [
+            "Kiel",
+            "Potsdam",
+            "Wiesbaden",
+            "Düsseldorf"
+        ],
+        "answer": 3,
+        "explanation": "Düsseldorf ist die Hauptstadt von Nordrhein-Westfalen"
+    },
+    {
+        "id": "de_cap_11",
+        "category": "deutschland",
+        "difficulty": "easy",
+        "question": "Was ist die Hauptstadt von Rheinland-Pfalz?",
+        "options": [
+            "Bremen",
+            "Mainz",
+            "Kiel",
+            "Hannover"
+        ],
+        "answer": 1,
+        "explanation": "Mainz ist die Hauptstadt von Rheinland-Pfalz"
+    },
+    {
+        "id": "de_cap_12",
+        "category": "deutschland",
+        "difficulty": "easy",
+        "question": "Was ist die Hauptstadt von Saarland?",
+        "options": [
+            "Wiesbaden",
+            "Stuttgart",
+            "München",
+            "Saarbrücken"
+        ],
+        "answer": 3,
+        "explanation": "Saarbrücken ist die Hauptstadt von Saarland"
+    },
+    {
+        "id": "de_cap_13",
+        "category": "deutschland",
+        "difficulty": "easy",
+        "question": "Was ist die Hauptstadt von Sachsen?",
+        "options": [
+            "Potsdam",
+            "Bremen",
+            "Saarbrücken",
+            "Dresden"
+        ],
+        "answer": 3,
+        "explanation": "Dresden ist die Hauptstadt von Sachsen"
+    },
+    {
+        "id": "de_cap_14",
+        "category": "deutschland",
+        "difficulty": "easy",
+        "question": "Was ist die Hauptstadt von Sachsen-Anhalt?",
+        "options": [
+            "Potsdam",
+            "Magdeburg",
+            "Berlin",
+            "Kiel"
+        ],
+        "answer": 1,
+        "explanation": "Magdeburg ist die Hauptstadt von Sachsen-Anhalt"
+    },
+    {
+        "id": "de_cap_15",
+        "category": "deutschland",
+        "difficulty": "easy",
+        "question": "Was ist die Hauptstadt von Schleswig-Holstein?",
+        "options": [
+            "Mainz",
+            "Kiel",
+            "Hamburg",
+            "Schwerin"
+        ],
+        "answer": 1,
+        "explanation": "Kiel ist die Hauptstadt von Schleswig-Holstein"
+    },
+    {
+        "id": "de_cap_16",
+        "category": "deutschland",
+        "difficulty": "easy",
+        "question": "Was ist die Hauptstadt von Thüringen?",
+        "options": [
+            "Dresden",
+            "Schwerin",
+            "Stuttgart",
+            "Erfurt"
+        ],
+        "answer": 3,
+        "explanation": "Erfurt ist die Hauptstadt von Thüringen"
+    }
+]

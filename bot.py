@@ -677,7 +677,7 @@ class QuizBot(slixmpp.ClientXMPP):
 
 def load_config(path: str) -> dict:
     config = json.loads(Path(path).read_text(encoding="utf-8"))
-    password = os.environ,get("QUIZBOT_XMPP_PASSWORD")
+    password = os.environ.get("QUIZBOT_XMPP_PASSWORD")
     if not password:
         raise RuntimeError("Set QUIZBOT_XMPP_PASSWORD")
     config["xmpp"]["password"] = password

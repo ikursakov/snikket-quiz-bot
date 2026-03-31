@@ -7,11 +7,13 @@ from typing import Optional, Tuple
 import asyncio
 import os
 import slixmpp
+import uuid
 
 
 CONFIG_FILE = "config.json"
 QUESTIONS_FILE = "questions.json"
 DB_FILE = "quiz.db"
+SESSEION_TIMEOUT_SECONDS = 15 * 60
 
 LETTER_START = ord("A")
 
@@ -121,6 +123,7 @@ class QuizStorage:
         cur.execute("""
             CREATE TABLE IF NOT EXISTS answers (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                session_id TEXT NOT NULL,
                 username TEXT NOT NULL,
                 question_id TEXT NOT NULL,
                 category TEXT NOT NULL,
@@ -134,11 +137,14 @@ class QuizStorage:
         cur.execute("""
             CREATE TABLE IF NOT EXISTS sessions (
                 username TEXT PRIMARY KEY,
+                session_id TEXT NOT NULL,
                 category TEXT,
                 current_question_id TEXT,
                 mode TEXT,
-                started_at TEXT,
-                awaiting_answer INTEGER NOT NULL DEFAULT 0
+                started_at TEXT NOT NULL,
+                last_activity_at TEXT NOT NULL,
+                awaiting_answer INTEGER NOT NULL DEFAULT 0,
+                is_active INTEGER NOT NULL DEFAULT 1
             )
         """)
 

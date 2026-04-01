@@ -9,7 +9,6 @@ import os
 import slixmpp
 import uuid
 
-
 CONFIG_FILE = "config.json"
 QUESTIONS_FILE = "questions.json"
 DB_FILE = "quiz.db"
@@ -63,7 +62,9 @@ class QuestionBank:
             required = {"id", "category", "question", "options", "answer"}
             missing = required - set(q.keys())
             if missing:
-                raise ValueError(f"Question #{i} missing keys: {sorted(missing)}")
+                raise ValueError(
+                    f"Question #{i} missing keys: {sorted(missing)}"
+                )
 
             if q["id"] in ids:
                 raise ValueError(f"Duplicate question id: {q['id']}")
@@ -101,7 +102,8 @@ class QuestionBank:
         pool = [
             q
             for q in self.questions
-            if (category is None or q["category"] == category) and q["id"] not in exclude_ids
+            if (category is None or q["category"] == category)
+            and q["id"] not in exclude_ids
         ]
         if not pool:
             return None
@@ -150,107 +152,207 @@ class QuizStorage:
 
         self.conn.commit()
 
-    def set_session(
-        self,
-        username: str,
-        category: Optional[str],
-        current_question_id: Optional[str],
-        mode: str = "normal",
-        awaiting_answer: bool = True,
-    ) -> None:
-        cur = self.conn.cursor()
-        cur.execute("""
-            INSERT INTO sessions(username, category, current_question_id, mode, started_at, awaiting_answer)
-            VALUES (?, ?, ?, ?, ?, ?)
+    def start_session(
+        self, username: str, category: str, mode: str = "normal"
+    ) -> str:
+        session_id = str(uuid.uuid4())
+        now = utc_now_iso()
+        cur = self.conn_cursor()
+        cur.execute(
+            """
+            INSERT INTO sessions(username, session_id, category, current_question_id, mode, started_at, last_activity_at, awaiting_answer, is_active)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(username) DO UPDATE SET
+                session_id=excluded.session_id,
                 category=excluded.category,
                 current_question_id=excluded.current_question_id,
                 mode=excluded.mode,
                 started_at=excluded.started_at,
-                awaiting_answer=excluded.awaiting_answer
-        """, (
-            username,
-            category,
-            current_question_id,
-            mode,
-            utc_now_iso(),
-            1 if awaiting_answer else 0,
-        ))
+                last_activity_at=excluded.last_activity_at,
+                awaiting_answer=excluded.awaiting_answer,
+                is_active=excluded.is_active
+        """,
+            (
+                username,
+                session_id,
+                category,
+                None,
+                mode,
+                now,
+                now,
+                0,
+                1,
+            ),
+        )
         self.conn.commit()
+        return session_id
+
+    def get_active_session(self, username: str) -> Optional[sqlite3.Row]:
+        cur = self.conn.cursor()
+        cur.execute(
+            """
+            SELECT * FROM sessions
+            WHERE username = ? AND is_active = 1
+        """,
+            (username,),
+        )
+        return cur.fetchone()
+
+    def get_last_session(self, username: str) -> Optional[sqlite3.Row]:
+        cur = self.conn.cursor()
+        cur.execute(
+            """
+            SELECT * FROM sessions
+            WHERE username = ?
+            ORDER BY started_at DESC
+            LIMIT 1
+        """,
+            (username,),
+        )
+        return cur.fetchone()
+
+    def update_session_question(
+        self, username: str, question_id: str, awaiting_answer: bool = True
+    ) -> None:
+        cur = self.conn.cursor()
+        cur.execute(
+            """
+            UPDATE sessions
+            SET current_question_id = ?, awaiting_answer = ?, last_activity_at = ?
+            WHERE username = ? AND is_active = 1
+        """,
+            (
+                question_id,
+                1 if awaiting_answer else 0,
+                utc_now_iso(),
+                username,
+            ),
+        )
+        self.conn.commit()
+
+    def touch_session(self, username: str) -> None:
+        cur = self.conn.cursor()
+        cur.execute(
+            """
+            UPDATE sessions
+            SET last_activity_at = ?
+            WHERE username = ? AND is_active = 1
+        """,
+            (utc_now_iso(), username),
+        )
+        self.conn.commit()
+
+    def end_session(self, username: str) -> None:
+        cur = self.conn.cursor()
+        cur.execute(
+            """
+            UPDATE sessions
+            SET is_active = 0, awaiting_answer = 0
+            WHERE username = ?
+        """,
+            (username,),
+        )
+        self.conn.commit()
+
+    def is_session_timed_out(
+        self, session: sqlite3.Row, timeout_seconds: int
+    ) -> bool:
+        last_activity = datetime.fromisoformat(session["last_activity_at"])
+        now = datetime.now(timezone.utc)
+        return (now - last_activity).total_seconds() > timeout_seconds
 
     def get_session(self, username: str) -> Optional[sqlite3.Row]:
         cur = self.conn.cursor()
         cur.execute("SELECT * FROM sessions WHERE username = ?", (username,))
         return cur.fetchone()
 
-    def clear_session(self, username: str) -> None:
+    def save_answer(
+        self,
+        username: str,
+        question: dict,
+        selected_option: int,
+        is_correct: bool,
+    ) -> None:
         cur = self.conn.cursor()
-        cur.execute("DELETE FROM sessions WHERE username = ?", (username,))
-        self.conn.commit()
-
-    def save_answer(self, username: str, question: dict, selected_option: int, is_correct: bool) -> None:
-        cur = self.conn.cursor()
-        cur.execute("""
+        cur.execute(
+            """
             INSERT INTO answers(username, question_id, category, selected_option, correct_option, is_correct, answered_at)
             VALUES (?, ?, ?, ?, ?, ?, ?)
-        """, (
-            username,
-            question["id"],
-            question["category"],
-            selected_option,
-            question["answer"],
-            1 if is_correct else 0,
-            utc_now_iso(),
-        ))
+        """,
+            (
+                username,
+                question["id"],
+                question["category"],
+                selected_option,
+                question["answer"],
+                1 if is_correct else 0,
+                utc_now_iso(),
+            ),
+        )
         self.conn.commit()
 
-    def recent_question_ids(self, username: str, category: Optional[str] = None, limit: int = 10) -> list[str]:
+    def recent_question_ids(
+        self, username: str, category: Optional[str] = None, limit: int = 10
+    ) -> list[str]:
         cur = self.conn.cursor()
         if category:
-            cur.execute("""
+            cur.execute(
+                """
                 SELECT question_id
                 FROM answers
                 WHERE username = ? AND category = ?
                 ORDER BY answered_at DESC
                 LIMIT ?
-            """, (username, category, limit))
+            """,
+                (username, category, limit),
+            )
         else:
-            cur.execute("""
+            cur.execute(
+                """
                 SELECT question_id
                 FROM answers
                 WHERE username = ?
                 ORDER BY answered_at DESC
                 LIMIT ?
-            """, (username, limit))
+            """,
+                (username, limit),
+            )
         return [row["question_id"] for row in cur.fetchall()]
 
     def wrong_question_ids(self, username: str, limit: int = 50) -> list[str]:
         cur = self.conn.cursor()
-        cur.execute("""
+        cur.execute(
+            """
             SELECT question_id
             FROM answers
             WHERE username = ? AND is_correct = 0
             ORDER BY answered_at DESC
             LIMIT ?
-        """, (username, limit))
+        """,
+            (username, limit),
+        )
         return [row["question_id"] for row in cur.fetchall()]
 
     def stats_summary(self, username: str) -> dict:
         cur = self.conn.cursor()
 
-        cur.execute("""
+        cur.execute(
+            """
             SELECT COUNT(*) AS total,
                    COALESCE(SUM(is_correct), 0) AS correct
             FROM answers
             WHERE username = ?
-        """, (username,))
+        """,
+            (username,),
+        )
         row = cur.fetchone()
         total = row["total"]
         correct = row["correct"]
         wrong = total - correct
         accuracy = 100.0 * correct / total if total else 0.0
 
-        cur.execute("""
+        cur.execute(
+            """
             SELECT category,
                    COUNT(*) AS total,
                    COALESCE(SUM(is_correct), 0) AS correct
@@ -258,7 +360,9 @@ class QuizStorage:
             WHERE username = ?
             GROUP BY category
             ORDER BY category
-        """, (username,))
+        """,
+            (username,),
+        )
         by_category = [dict(r) for r in cur.fetchall()]
 
         return {
@@ -271,18 +375,24 @@ class QuizStorage:
 
     def recent_mistakes(self, username: str, limit: int = 5) -> list[dict]:
         cur = self.conn.cursor()
-        cur.execute("""
+        cur.execute(
+            """
             SELECT question_id, selected_option, correct_option, answered_at
             FROM answers
             WHERE username = ? AND is_correct = 0
             ORDER BY answered_at DESC
             LIMIT ?
-        """, (username, limit))
+        """,
+            (username, limit),
+        )
         return [dict(r) for r in cur.fetchall()]
 
-    def weakest_categories(self, username: str, min_answers: int = 2, limit: int = 3) -> list[dict]:
+    def weakest_categories(
+        self, username: str, min_answers: int = 2, limit: int = 3
+    ) -> list[dict]:
         cur = self.conn.cursor()
-        cur.execute("""
+        cur.execute(
+            """
             SELECT category,
                    COUNT(*) AS total,
                    COALESCE(SUM(is_correct), 0) AS correct
@@ -290,26 +400,32 @@ class QuizStorage:
             WHERE username = ?
             GROUP BY category
             HAVING COUNT(*) >= ?
-        """, (username, min_answers))
+        """,
+            (username, min_answers),
+        )
 
         rows = []
         for r in cur.fetchall():
             total = r["total"]
             correct = r["correct"]
             acc = 100.0 * correct / total if total else 0.0
-            rows.append({
-                "category": r["category"],
-                "total": total,
-                "correct": correct,
-                "accuracy": acc,
-            })
+            rows.append(
+                {
+                    "category": r["category"],
+                    "total": total,
+                    "correct": correct,
+                    "accuracy": acc,
+                }
+            )
 
         rows.sort(key=lambda x: (x["accuracy"], -x["total"], x["category"]))
         return rows[:limit]
 
 
 class QuizBot(slixmpp.ClientXMPP):
-    def __init__(self, config: dict, question_bank: QuestionBank, storage: QuizStorage):
+    def __init__(
+        self, config: dict, question_bank: QuestionBank, storage: QuizStorage
+    ):
         jid = config["xmpp"]["jid"]
         password = config["xmpp"]["password"]
 
@@ -345,7 +461,10 @@ class QuizBot(slixmpp.ClientXMPP):
         username = self.resolve_username(from_jid)
 
         if username is None:
-            self.reply(msg, "Извини, я не знаю этого пользователя. Добавь JID в config.json.")
+            self.reply(
+                msg,
+                "Извини, я не знаю этого пользователя. Добавь JID в config.json.",
+            )
             return
 
         body = msg["body"].strip()
@@ -379,7 +498,7 @@ class QuizBot(slixmpp.ClientXMPP):
         elif cmd == "/mistakes":
             await self.cmd_mistakes(msg, username, arg)
         elif cmd == "/stop":
-            self.storage.clear_session(username)
+            self.storage.end_session(username)
             self.reply(msg, "Текущая сессия остановлена.")
         else:
             self.reply(msg, "Неизвестная команда. Напиши /help")
@@ -422,13 +541,15 @@ class QuizBot(slixmpp.ClientXMPP):
         allowed = self.permissions.get(username, [])
         others = [u for u in allowed if u != username]
         if others:
-            lines.extend([
-                "",
-                "Команды для просмотра статистики:",
-                "/stats <username>",
-                "/report <username>",
-                "/mistakes <username>",
-            ])
+            lines.extend(
+                [
+                    "",
+                    "Команды для просмотра статистики:",
+                    "/stats <username>",
+                    "/report <username>",
+                    "/mistakes <username>",
+                ]
+            )
 
         return "\n".join(lines)
 
@@ -441,24 +562,37 @@ class QuizBot(slixmpp.ClientXMPP):
     async def cmd_quiz(self, msg, username: str, arg: str):
         category = arg.strip()
         if not category:
-            self.reply(msg, "Укажи тему: /quiz <category>\nНапример: /quiz deutschland")
+            self.reply(
+                msg,
+                "Укажи тему: /quiz <category>\nНапример: /quiz deutschland",
+            )
             return
 
         if category not in self.qb.categories():
-            self.reply(msg, f"Неизвестная тема: {category}\n\n{self.text_categories()}")
+            self.reply(
+                msg,
+                f"Неизвестная тема: {category}\n\n{self.text_categories()}",
+            )
             return
 
-        await self.send_new_question(msg, username, category=category, mode="normal")
+        await self.send_new_question(
+            msg, username, category=category, mode="normal"
+        )
 
     async def cmd_next(self, msg, username: str):
         session = self.storage.get_session(username)
         if not session:
-            self.reply(msg, "Нет активной сессии. Начни с /quiz <category> или /repeat_wrong")
+            self.reply(
+                msg,
+                "Нет активной сессии. Начни с /quiz <category> или /repeat_wrong",
+            )
             return
 
         mode = session["mode"] or "normal"
         category = session["category"]
-        await self.send_new_question(msg, username, category=category, mode=mode)
+        await self.send_new_question(
+            msg, username, category=category, mode=mode
+        )
 
     async def cmd_repeat_wrong(self, msg, username: str):
         wrong_ids = self.storage.wrong_question_ids(username)
@@ -466,7 +600,9 @@ class QuizBot(slixmpp.ClientXMPP):
             self.reply(msg, "У тебя пока нет ошибочных вопросов.")
             return
 
-        await self.send_new_question(msg, username, category=None, mode="repeat_wrong")
+        await self.send_new_question(
+            msg, username, category=None, mode="repeat_wrong"
+        )
 
     async def cmd_stats(self, msg, requester: str, arg: str):
         target = arg.strip() or requester
@@ -495,7 +631,9 @@ class QuizBot(slixmpp.ClientXMPP):
                 total = row["total"]
                 correct = row["correct"]
                 acc = 100.0 * correct / total if total else 0.0
-                lines.append(f"- {row['category']}: {correct}/{total} ({acc:.1f}%)")
+                lines.append(
+                    f"- {row['category']}: {correct}/{total} ({acc:.1f}%)"
+                )
 
         self.reply(msg, "\n".join(lines))
 
@@ -532,12 +670,16 @@ class QuizBot(slixmpp.ClientXMPP):
                 total = row["total"]
                 correct = row["correct"]
                 acc = 100.0 * correct / total if total else 0.0
-                lines.append(f"- {row['category']}: {correct}/{total} ({acc:.1f}%)")
+                lines.append(
+                    f"- {row['category']}: {correct}/{total} ({acc:.1f}%)"
+                )
 
         if weak:
             lines.extend(["", "Слабые темы:"])
             for row in weak:
-                lines.append(f"- {row['category']} ({row['accuracy']:.1f}%, {row['correct']}/{row['total']})")
+                lines.append(
+                    f"- {row['category']} ({row['accuracy']:.1f}%, {row['correct']}/{row['total']})"
+                )
 
         if mistakes:
             lines.extend(["", "Последние ошибки:"])
@@ -582,7 +724,10 @@ class QuizBot(slixmpp.ClientXMPP):
     async def handle_answer(self, msg, username: str, text: str):
         session = self.storage.get_session(username)
         if not session or not session["awaiting_answer"]:
-            self.reply(msg, "Я не жду ответа. Начни с /quiz <category> или /repeat_wrong")
+            self.reply(
+                msg,
+                "Я не жду ответа. Начни с /quiz <category> или /repeat_wrong",
+            )
             return
 
         idx = letter_to_index(text)
@@ -592,8 +737,11 @@ class QuizBot(slixmpp.ClientXMPP):
 
         question = self.qb.get(session["current_question_id"])
         if not question:
-            self.storage.clear_session(username)
-            self.reply(msg, "Не удалось найти текущий вопрос. Начни заново: /quiz <category>")
+            self.storage.end_session(username)
+            self.reply(
+                msg,
+                "Не удалось найти текущий вопрос. Начни заново: /quiz <category>",
+            )
             return
 
         if idx >= len(question["options"]):
@@ -614,7 +762,7 @@ class QuizBot(slixmpp.ClientXMPP):
             selected_letter = option_letter(idx)
             selected_text = question["options"][idx]
             lines = [
-                f"❌ Неправильно.",
+                "❌ Неправильно.",
                 f"Твой ответ: {selected_letter}) {selected_text}",
                 f"Правильный ответ: {answer_letter}) {answer_text}",
             ]
@@ -632,12 +780,16 @@ class QuizBot(slixmpp.ClientXMPP):
         )
         self.reply(msg, "\n".join(lines))
 
-    async def send_new_question(self, msg, username: str, category: Optional[str], mode: str):
+    async def send_new_question(
+        self, msg, username: str, category: Optional[str], mode: str
+    ):
         question = None
 
         if mode == "repeat_wrong":
             wrong_ids = self.storage.wrong_question_ids(username, limit=100)
-            recent_ids = set(self.storage.recent_question_ids(username, limit=5))
+            recent_ids = set(
+                self.storage.recent_question_ids(username, limit=5)
+            )
             candidates = [qid for qid in wrong_ids if qid not in recent_ids]
             if not candidates:
                 candidates = wrong_ids
@@ -645,8 +797,14 @@ class QuizBot(slixmpp.ClientXMPP):
             if questions:
                 question = random.choice(questions)
         else:
-            recent_ids = set(self.storage.recent_question_ids(username, category=category, limit=10))
-            question = self.qb.random_question(category=category, exclude_ids=recent_ids)
+            recent_ids = set(
+                self.storage.recent_question_ids(
+                    username, category=category, limit=10
+                )
+            )
+            question = self.qb.random_question(
+                category=category, exclude_ids=recent_ids
+            )
             if question is None:
                 question = self.qb.random_question(category=category)
 
@@ -654,7 +812,9 @@ class QuizBot(slixmpp.ClientXMPP):
             if mode == "repeat_wrong":
                 self.reply(msg, "Не удалось выбрать вопрос из ошибочных.")
             else:
-                self.reply(msg, "Не удалось выбрать вопрос. Проверь базу вопросов.")
+                self.reply(
+                    msg, "Не удалось выбрать вопрос. Проверь базу вопросов."
+                )
             return
 
         self.storage.set_session(
@@ -697,7 +857,7 @@ def main():
 
     xmpp = QuizBot(config, qb, storage)
     xmpp.connect()
-    #xmpp.process(forever=True)
+    # xmpp.process(forever=True)
     asyncio.get_event_loop().run_forever()
 
 

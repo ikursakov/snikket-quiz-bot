@@ -268,6 +268,7 @@ class QuizStorage:
 
     def save_answer(
         self,
+        session_id: str,
         username: str,
         question: dict,
         selected_option: int,
@@ -276,10 +277,11 @@ class QuizStorage:
         cur = self.conn.cursor()
         cur.execute(
             """
-            INSERT INTO answers(username, question_id, category, selected_option, correct_option, is_correct, answered_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO answers(session_id, username, question_id, category, selected_option, correct_option, is_correct, answered_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """,
             (
+                session_id,
                 username,
                 question["id"],
                 question["category"],

@@ -268,14 +268,17 @@ class QuizStorage:
 
     def session_stats(self, session_id: str) -> dict:
         cur = self.conn.cursor()
-        cur.execute("""
+        cur.execute(
+            """
             SELECT COUNT(*) AS total,
                    COALESCE(SUM(is_correct), 0) AS correct,
                    MIN(answered_at) AS started_at,
                    MAX(answered_at) AS ended_at
             FROM answers
             WHERE session_id = ?
-        """, (session_id,))
+        """,
+            (session_id,),
+        )
         row = cur.fetchone()
         total = row["total"]
         correct = row["correct"] or 0
@@ -524,8 +527,9 @@ class QuizBot(slixmpp.ClientXMPP):
         elif cmd == "/mistakes":
             await self.cmd_mistakes(msg, username, arg)
         elif cmd == "/stop":
-            self.storage.end_session(username)
-            self.reply(msg, "Текущая сессия остановлена.")
+            await self.cmd_stop(msg, username)
+        elif cmd == "/session":
+            await self.cmd_session(msg, username, arg)
         else:
             self.reply(msg, "Неизвестная команда. Напиши /help")
 
@@ -584,6 +588,22 @@ class QuizBot(slixmpp.ClientXMPP):
         if not cats:
             return "Категорий пока нет."
         return "Доступные темы:\n" + "\n".join(f"- {c}" for c in cats)
+
+    def format_session_summary(
+        self, session_id: str, category: str, prefix: str = "Итог сессии"
+    ) -> str:
+        stats = self.storage.start_session(session_id)
+        return "\n".join(
+            [
+                prefix,
+                "",
+                f"Тема: {category}",
+                f"Всего ответов: {stats['total']}",
+                f"Правильных: {stats['correct']}",
+                f"Неправильных: {stats['wrong']}",
+                f"Точность: {stats['accuracy']:.1f}%",
+            ]
+        )
 
     async def cmd_quiz(self, msg, username: str, arg: str):
         category = arg.strip()
@@ -746,6 +766,36 @@ class QuizBot(slixmpp.ClientXMPP):
             lines.append(f"  ответ: {selected}, правильно: {correct}")
 
         self.reply(msg, "\n".join(lines))
+
+    async def cmd_stop(self, msg, username: str):
+        session = self.storage.get_active_session(username)
+        if not session:
+            self.reply(msg, "Активной сессии нет.")
+            return
+
+        summary = self.format_session_summary(
+            session["session_id"], session["category"]
+        )
+        self.storage.end_session(username)
+        self.reply(msg, "Сессия завершена.\n\n" + summary)
+
+    async def cmd_session(self, msg, requester: str, arg: str):
+        target = arg.strip() or requester
+        if not self.can_view(requester, target):
+            self.reply(msg, "У тебя нет прав смотреть эту статистику.")
+            return
+
+        session = self.storage.get_last_session(target)
+        if not session:
+            self.reply(msg, f"У пользователя {target} пока не было сессий.")
+            return
+
+        summary = self.format_session_summary(
+            session["session_id"],
+            session["category"],
+            prefix=f"Последняя сессия {target}",
+        )
+        self.reply(msg, summary)
 
     async def handle_answer(self, msg, username: str, text: str):
         session = self.storage.get_session(username)

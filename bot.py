@@ -266,6 +266,30 @@ class QuizStorage:
         cur.execute("SELECT * FROM sessions WHERE username = ?", (username,))
         return cur.fetchone()
 
+    def session_stats(self, session_id: str) -> dict:
+        cur = self.conn.cursor()
+        cur.execute("""
+            SELECT COUNT(*) AS total,
+                   COALESCE(SUM(is_correct), 0) AS correct,
+                   MIN(answered_at) AS started_at,
+                   MAX(answered_at) AS ended_at
+            FROM answers
+            WHERE session_id = ?
+        """, (session_id,))
+        row = cur.fetchone()
+        total = row["total"]
+        correct = row["correct"] or 0
+        wrong = total - correct
+        accuracy = 100.0 * correct / total if total else 0.0
+        return {
+            "total": total,
+            "correct": correct,
+            "wrong": wrong,
+            "accuracy": accuracy,
+            "started_at": row["started_at"],
+            "ended_at": row["ended_at"],
+        }
+
     def save_answer(
         self,
         session_id: str,

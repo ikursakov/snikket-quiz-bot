@@ -222,5 +222,104 @@
         ],
         "answer": 3,
         "explanation": "Erfurt ist die Hauptstadt von Thüringen"
-    }
+    },
+  {
+    "id": "by_001",
+    "category": "bayern",
+    "difficulty": "easy",
+    "question": "Mit welchem Bundesland grenzt Bayern NICHT?",
+    "options": ["Hessen", "Thüringen", "Sachsen-Anhalt", "Baden-Württemberg"],
+    "answer": 2,
+    "explanation": "Bayern grenzt nicht an Sachsen-Anhalt."
+  },
+  {
+    "id": "by_002",
+    "category": "bayern",
+    "difficulty": "easy",
+    "question": "Was ist der höchste Berg in Bayern?",
+    "options": ["Watzmann", "Zugspitze", "Hochkalter", "Alpspitze"],
+    "answer": 1,
+    "explanation": "Die Zugspitze ist mit 2962 m der höchste Berg Deutschlands."
+  },
+  {
+    "id": "by_003",
+    "category": "bayern",
+    "difficulty": "easy",
+    "question": "Welcher See ist der größte in Bayern?",
+    "options": ["Tegernsee", "Chiemsee", "Eibsee", "Bodensee"],
+    "answer": 1,
+    "explanation": "Der Chiemsee ist der größte See, der vollständig in Bayern liegt."
+  },
+  {
+    "id": "by_004",
+    "category": "bayern",
+    "difficulty": "easy",
+    "question": "Welcher Fluss ist der längste in Bayern?",
+    "options": ["Main", "Isar", "Neckar", "Rhein"],
+    "answer": 0,
+    "explanation": "Der Main ist der längste Fluss, der vollständig durch Bayern fließt."
+  },
+  {
+    "id": "by_005",
+    "category": "bayern",
+    "difficulty": "medium",
+    "question": "Was ist der Regierungssitz von Oberbayern?",
+    "options": ["Regensburg", "München", "Augsburg", "Landshut"],
+    "answer": 1,
+    "explanation": "Der Regierungssitz von Oberbayern ist München."
+  },
+  {
+    "id": "by_006",
+    "category": "bayern",
+    "difficulty": "medium",
+    "question": "Was ist der Regierungssitz von Schwaben?",
+    "options": ["Würzburg", "Bayreuth", "Augsburg", "München"],
+    "answer": 2,
+    "explanation": "Der Regierungssitz von Schwaben ist Augsburg."
+  },
+  {
+    "id": "by_007",
+    "category": "bayern",
+    "difficulty": "medium",
+    "question": "Was ist der Regierungssitz von Mittelfranken?",
+    "options": ["Bayreuth", "Regensburg", "Ansbach", "Nürnberg"],
+    "answer": 2,
+    "explanation": "Der Regierungssitz von Mittelfranken ist Ansbach."
+  },
+  {
+    "id": "by_008",
+    "category": "bayern",
+    "difficulty": "medium",
+    "question": "Was ist der Regierungssitz von Unterfranken?",
+    "options": ["Bamberg", "Bayreuth", "Würzburg", "Ansbach"],
+    "answer": 2,
+    "explanation": "Der Regierungssitz von Unterfranken ist Würzburg."
+  },
+  {
+    "id": "by_009",
+    "category": "bayern",
+    "difficulty": "medium",
+    "question": "Was ist der Regierungssitz von Niederbayern?",
+    "options": ["Passau", "München", "Landshut", "Regensburg"],
+    "answer": 2,
+    "explanation": "Der Regierungssitz von Niederbayern ist Landshut."
+  },
+  {
+    "id": "by_010",
+    "category": "bayern",
+    "difficulty": "medium",
+    "question": "Was ist der Regierungssitz von Oberpfalz?",
+    "options": ["Amberg", "Passau", "Regensburg", "Landshut"],
+    "answer": 2,
+    "explanation": "Der Regierungssitz der Oberpfalz ist Regensburg."
+  },
+  {
+    "id": "by_011",
+    "category": "bayern",
+    "difficulty": "medium",
+    "question": "Was ist der Regierungssitz von Oberfranken?",
+    "options": ["Bamberg", "Coburg", "Würzburg", "Bayreuth"],
+    "answer": 3,
+    "explanation": "Der Regierungssitz von Oberfranken ist Bayreuth."
+  }
 ]

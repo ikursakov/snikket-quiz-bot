@@ -12,7 +12,7 @@ import uuid
 CONFIG_FILE = "config.json"
 QUESTIONS_FILE = "questions.json"
 DB_FILE = "quiz.db"
-SESSEION_TIMEOUT_SECONDS = 15 * 60
+SESSION_TIMEOUT_SECONDS = 15 * 60
 
 LETTER_START = ord("A")
 
@@ -157,7 +157,7 @@ class QuizStorage:
     ) -> str:
         session_id = str(uuid.uuid4())
         now = utc_now_iso()
-        cur = self.conn_cursor()
+        cur = self.conn.cursor()
         cur.execute(
             """
             INSERT INTO sessions(username, session_id, category, current_question_id, mode, started_at, last_activity_at, awaiting_answer, is_active)
@@ -547,9 +547,10 @@ class QuizBot(slixmpp.ClientXMPP):
             "Команды:\n"
             "/categories — список тем\n"
             "/quiz <category> — начать квиз\n"
-            "/next — следующий вопрос\n"
             "/repeat_wrong — повторить ошибочные вопросы\n"
             "/stats — твоя статистика\n"
+            "/session — статистика последней сессии\n"
+            "/stop — завершить текущую сессию\n"
             "/help — помощь"
         )
 
@@ -560,11 +561,12 @@ class QuizBot(slixmpp.ClientXMPP):
             "/help",
             "/categories",
             "/quiz <category>",
-            "/next",
             "/repeat_wrong",
             "/stats",
+            "/session",
             "/stop",
             "",
+            "После ответа следующий вопрос приходит автоматически.",
             "Отвечать на вопрос можно одной буквой: A, B, C, D ...",
         ]
 
@@ -578,6 +580,7 @@ class QuizBot(slixmpp.ClientXMPP):
                     "/stats <username>",
                     "/report <username>",
                     "/mistakes <username>",
+                    "/session <username>",
                 ]
             )
 
@@ -592,7 +595,7 @@ class QuizBot(slixmpp.ClientXMPP):
     def format_session_summary(
         self, session_id: str, category: str, prefix: str = "Итог сессии"
     ) -> str:
-        stats = self.storage.start_session(session_id)
+        stats = self.storage.session_stats(session_id)
         return "\n".join(
             [
                 prefix,
@@ -621,12 +624,31 @@ class QuizBot(slixmpp.ClientXMPP):
             )
             return
 
-        await self.send_new_question(
-            msg, username, category=category, mode="normal"
-        )
+        active_session = self.storage.get_active_session(username)
+        if active_session:
+            if self.storage.is_session_timed_out(
+                active_session, SESSION_TIMEOUT_SECONDS
+            ):
+                summary = self.format_session_summary(
+                    active_session["session_id"], active_session["category"]
+                )
+                self.storage.end_session(username)
+                self.reply(
+                    msg,
+                    "Предыдущая сессия завершена по таймауту.\n\n" + summary,
+                )
+            else:
+                self.reply(
+                    msg,
+                    f"У тебя уже идёт сессия по теме {active_session['category']}, напиши /stop или ответь на вопрос.",
+                )
+                return
+
+        self.storage.start_session(username, category=category, mode="normal")
+        await self.send_new_question(msg, username)
 
     async def cmd_next(self, msg, username: str):
-        session = self.storage.get_session(username)
+        session = self.storage.get_active_session(username)
         if not session:
             self.reply(
                 msg,
@@ -634,21 +656,46 @@ class QuizBot(slixmpp.ClientXMPP):
             )
             return
 
-        mode = session["mode"] or "normal"
-        category = session["category"]
-        await self.send_new_question(
-            msg, username, category=category, mode=mode
-        )
+        if self.storage.is_session_timed_out(session, SESSION_TIMEOUT_SECONDS):
+            summary = self.format_session_summary(
+                session["session_id"], session["category"]
+            )
+            self.storage.end_session(username)
+            self.reply(msg, "Сессия завершена по таймауту.\n\n" + summary)
+            return
+
+        await self.send_new_question(msg, username)
 
     async def cmd_repeat_wrong(self, msg, username: str):
+        active_session = self.storage.get_active_session(username)
+        if active_session:
+            if self.storage.is_session_timed_out(
+                active_session, SESSION_TIMEOUT_SECONDS
+            ):
+                summary = self.format_session_summary(
+                    active_session["session_id"], active_session["category"]
+                )
+                self.storage.end_session(username)
+                self.reply(
+                    msg,
+                    "Предыдущая сессия завершена по таймауту.\n\n" + summary,
+                )
+            else:
+                self.reply(
+                    msg,
+                    f"У тебя уже идёт сессия по теме {active_session['category']}, напиши /stop или ответь на вопрос.",
+                )
+                return
+
         wrong_ids = self.storage.wrong_question_ids(username)
         if not wrong_ids:
             self.reply(msg, "У тебя пока нет ошибочных вопросов.")
             return
 
-        await self.send_new_question(
-            msg, username, category=None, mode="repeat_wrong"
+        self.storage.start_session(
+            username, category="repeat_wrong", mode="repeat_wrong"
         )
+        await self.send_new_question(msg, username)
 
     async def cmd_stats(self, msg, requester: str, arg: str):
         target = arg.strip() or requester
@@ -798,12 +845,24 @@ class QuizBot(slixmpp.ClientXMPP):
         self.reply(msg, summary)
 
     async def handle_answer(self, msg, username: str, text: str):
-        session = self.storage.get_session(username)
-        if not session or not session["awaiting_answer"]:
+        session = self.storage.get_active_session(username)
+
+        if not session:
             self.reply(
                 msg,
-                "Я не жду ответа. Начни с /quiz <category> или /repeat_wrong",
+                "Нет активной сессии. Начни с /quiz <category> или /repeat_wrong",
             )
+            return
+        if self.storage.is_session_timed_out(session, SESSION_TIMEOUT_SECONDS):
+            summary = self.format_session_summary(
+                session["session_id"], session["category"]
+            )
+            self.storage.end_session(username)
+            self.reply(msg, "Сессия завершена по таймауту.\n\n" + summary)
+            return
+
+        if not session["awaiting_answer"]:
+            self.reply(msg, "Сейчас я не жду ответа.")
             return
 
         idx = letter_to_index(text)
@@ -826,7 +885,10 @@ class QuizBot(slixmpp.ClientXMPP):
             return
 
         is_correct = idx == question["answer"]
-        self.storage.save_answer(username, question, idx, is_correct)
+        self.storage.save_answer(
+            session["session_id"], username, question, idx, is_correct
+        )
+        self.storage.touch_session(username)
 
         explanation = question.get("explanation", "").strip()
         answer_letter = option_letter(question["answer"])
@@ -846,61 +908,39 @@ class QuizBot(slixmpp.ClientXMPP):
         if explanation:
             lines.extend(["", explanation])
 
-        lines.extend(["", "Напиши /next для следующего вопроса."])
-        self.storage.set_session(
+        next_question = self.pick_next_question(
             username=username,
-            category=session["category"],
-            current_question_id=question["id"],
+            category=(
+                session["category"]
+                if session["mode"] != "repeat_wrong"
+                else None
+            ),
             mode=session["mode"] or "normal",
-            awaiting_answer=False,
+        )
+
+        if next_question is None:
+            summary = self.format_session_summary(
+                session["session_id"], session["category"]
+            )
+            self.storage.end_session(username)
+            lines.extend(["", "Сессия завершена.", "", summary])
+            self.reply(msg, "\n".join(lines))
+            return
+
+        self.storage.update_session_question(
+            username, next_question["id"], awaiting_answer=True
+        )
+        lines.extend(
+            [
+                "",
+                "Следующий вопрос:",
+                "",
+                self.format_question_text(next_question),
+            ]
         )
         self.reply(msg, "\n".join(lines))
 
-    async def send_new_question(
-        self, msg, username: str, category: Optional[str], mode: str
-    ):
-        question = None
-
-        if mode == "repeat_wrong":
-            wrong_ids = self.storage.wrong_question_ids(username, limit=100)
-            recent_ids = set(
-                self.storage.recent_question_ids(username, limit=5)
-            )
-            candidates = [qid for qid in wrong_ids if qid not in recent_ids]
-            if not candidates:
-                candidates = wrong_ids
-            questions = self.qb.questions_for_ids(candidates)
-            if questions:
-                question = random.choice(questions)
-        else:
-            recent_ids = set(
-                self.storage.recent_question_ids(
-                    username, category=category, limit=10
-                )
-            )
-            question = self.qb.random_question(
-                category=category, exclude_ids=recent_ids
-            )
-            if question is None:
-                question = self.qb.random_question(category=category)
-
-        if question is None:
-            if mode == "repeat_wrong":
-                self.reply(msg, "Не удалось выбрать вопрос из ошибочных.")
-            else:
-                self.reply(
-                    msg, "Не удалось выбрать вопрос. Проверь базу вопросов."
-                )
-            return
-
-        self.storage.set_session(
-            username=username,
-            category=question["category"] if mode != "repeat_wrong" else None,
-            current_question_id=question["id"],
-            mode=mode,
-            awaiting_answer=True,
-        )
-
+    def format_question_text(self, question: dict) -> str:
         lines = [
             f"Тема: {question['category']}",
             f"Сложность: {question.get('difficulty', 'normal')}",
@@ -914,7 +954,44 @@ class QuizBot(slixmpp.ClientXMPP):
 
         lines.append("")
         lines.append("Ответь одной буквой: A, B, C, D ...")
-        self.reply(msg, "\n".join(lines))
+        return "\n".join(lines)
+
+    def pick_next_question(self, username: str, category: Optional[str], mode: str) -> Optional[dict]:
+        if mode == "repeat_wrong":
+            wrong_ids = self.storage.wrong_question_ids(username, limit=100)
+            recent_ids = set(self.storage.recent_question_ids(username, limit=5))
+            candidates = [qid for qid in wrong_ids if qid not in recent_ids]
+            if not candidates:
+                candidates = wrong_ids
+            questions = self.qb.questions_for_ids(candidates)
+            return random.choice(questions) if questions else None
+
+        recent_ids = set(self.storage.recent_question_ids(username, category=category, limit=10))
+        question = self.qb.random_question(category=category, exclude_ids=recent_ids)
+        if question is None:
+            question = self.qb.random_question(category=category)
+        return question
+
+    async def send_new_question(self, msg, username: str):
+        session = self.storage.get_active_session(username)
+        if not session:
+            self.reply(msg, "Нет активной сессии.")
+            return
+
+        question = self.pick_next_question(
+            username=username,
+            category=session["category"] if session["mode"] != "repeat_wrong" else None,
+            mode=session["mode"] or "normal",
+        )
+
+        if question is None:
+            summary = self.format_session_summary(session["session_id"], session["category"])
+            self.storage.end_session(username)
+            self.reply(msg, "Не удалось выбрать вопрос.\n\n" + summary)
+            return
+
+        self.storage.update_session_question(username, question["id"], awaiting_answer=True)
+        self.reply(msg, self.format_question_text(question))
 
 
 def load_config(path: str) -> dict:

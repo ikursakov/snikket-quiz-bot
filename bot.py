@@ -488,6 +488,7 @@ class QuizBot(slixmpp.ClientXMPP):
         self.register_plugin("xep_0363")
 
         self.media_root = Path(".")
+        self.image_cache: dict[str, str] = {}
 
     async def session_start(self, event):
         self.send_presence()
@@ -1022,14 +1023,20 @@ class QuizBot(slixmpp.ClientXMPP):
         if not image_path.exists():
             raise FileNotFoundError(f"Image file not found: {image_path}")
 
-        content_type, _ = mimetypes.guess_type(str(image_path))
-        if not content_type:
-            content_type = "image/png"
+        cache_key = str(image_path.resolve())
 
-        url = await self["xep_0363"].upload_file(
+        if cache_key in self.image_cache:
+            url = self.image_cache[cache_key]
+        else:
+            content_type, _ = mimetypes.guess_type(str(image_path))
+            if not content_type:
+                content_type = "image/png"
+
+            url = await self["xep_0363"].upload_file(
                 filename=image_path,
                 content_type=content_type,
                 )
+            self.image_cache[cache_key] = url
 
         msg = self.make_message(
                 mto=to_jid,

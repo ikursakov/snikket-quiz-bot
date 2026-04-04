@@ -11,7 +11,8 @@
             "Hamburg"
         ],
         "answer": 1,
-        "explanation": "Stuttgart ist die Hauptstadt von Baden-Württemberg"
+        "explanation": "Stuttgart ist die Hauptstadt von Baden-Württemberg",
+        "image": false
     },
     {
         "id": "de_cap_2",
@@ -25,7 +26,8 @@
             "Magdeburg"
         ],
         "answer": 2,
-        "explanation": "München ist die Hauptstadt von Bayern"
+        "explanation": "München ist die Hauptstadt von Bayern",
+        "image": false
     },
     {
         "id": "de_cap_3",
@@ -39,7 +41,8 @@
             "Magdeburg"
         ],
         "answer": 0,
-        "explanation": "Berlin ist die Hauptstadt von Berlin"
+        "explanation": "Berlin ist die Hauptstadt von Berlin",
+        "image": false
     },
     {
         "id": "de_cap_4",
@@ -53,7 +56,8 @@
             "München"
         ],
         "answer": 1,
-        "explanation": "Potsdam ist die Hauptstadt von Brandenburg"
+        "explanation": "Potsdam ist die Hauptstadt von Brandenburg",
+        "image": false
     },
     {
         "id": "de_cap_5",
@@ -67,7 +71,8 @@
             "Mainz"
         ],
         "answer": 2,
-        "explanation": "Bremen ist die Hauptstadt von Bremen"
+        "explanation": "Bremen ist die Hauptstadt von Bremen",
+        "image": false
     },
     {
         "id": "de_cap_6",
@@ -81,7 +86,8 @@
             "Hamburg"
         ],
         "answer": 3,
-        "explanation": "Hamburg ist die Hauptstadt von Hamburg"
+        "explanation": "Hamburg ist die Hauptstadt von Hamburg",
+        "image": false
     },
     {
         "id": "de_cap_7",
@@ -95,7 +101,8 @@
             "München"
         ],
         "answer": 2,
-        "explanation": "Wiesbaden ist die Hauptstadt von Hessen"
+        "explanation": "Wiesbaden ist die Hauptstadt von Hessen",
+        "image": false
     },
     {
         "id": "de_cap_8",
@@ -109,7 +116,8 @@
             "Hamburg"
         ],
         "answer": 0,
-        "explanation": "Schwerin ist die Hauptstadt von Mecklenburg-Vorpommern"
+        "explanation": "Schwerin ist die Hauptstadt von Mecklenburg-Vorpommern",
+        "image": false
     },
     {
         "id": "de_cap_9",
@@ -123,7 +131,8 @@
             "Mainz"
         ],
         "answer": 1,
-        "explanation": "Hannover ist die Hauptstadt von Niedersachsen"
+        "explanation": "Hannover ist die Hauptstadt von Niedersachsen",
+        "image": false
     },
     {
         "id": "de_cap_10",
@@ -137,7 +146,8 @@
             "Düsseldorf"
         ],
         "answer": 3,
-        "explanation": "Düsseldorf ist die Hauptstadt von Nordrhein-Westfalen"
+        "explanation": "Düsseldorf ist die Hauptstadt von Nordrhein-Westfalen",
+        "image": false
     },
     {
         "id": "de_cap_11",
@@ -151,7 +161,8 @@
             "Hannover"
         ],
         "answer": 1,
-        "explanation": "Mainz ist die Hauptstadt von Rheinland-Pfalz"
+        "explanation": "Mainz ist die Hauptstadt von Rheinland-Pfalz",
+        "image": false
     },
     {
         "id": "de_cap_12",
@@ -165,7 +176,8 @@
             "Saarbrücken"
         ],
         "answer": 3,
-        "explanation": "Saarbrücken ist die Hauptstadt von Saarland"
+        "explanation": "Saarbrücken ist die Hauptstadt von Saarland",
+        "image": false
     },
     {
         "id": "de_cap_13",
@@ -179,7 +191,8 @@
             "Dresden"
         ],
         "answer": 3,
-        "explanation": "Dresden ist die Hauptstadt von Sachsen"
+        "explanation": "Dresden ist die Hauptstadt von Sachsen",
+        "image": false
     },
     {
         "id": "de_cap_14",
@@ -193,7 +206,8 @@
             "Kiel"
         ],
         "answer": 1,
-        "explanation": "Magdeburg ist die Hauptstadt von Sachsen-Anhalt"
+        "explanation": "Magdeburg ist die Hauptstadt von Sachsen-Anhalt",
+        "image": false
     },
     {
         "id": "de_cap_15",
@@ -207,7 +221,8 @@
             "Schwerin"
         ],
         "answer": 1,
-        "explanation": "Kiel ist die Hauptstadt von Schleswig-Holstein"
+        "explanation": "Kiel ist die Hauptstadt von Schleswig-Holstein",
+        "image": false
     },
     {
         "id": "de_cap_16",
@@ -221,105 +236,412 @@
             "Erfurt"
         ],
         "answer": 3,
-        "explanation": "Erfurt ist die Hauptstadt von Thüringen"
+        "explanation": "Erfurt ist die Hauptstadt von Thüringen",
+        "image": false
     },
-  {
-    "id": "by_001",
-    "category": "bayern",
-    "difficulty": "easy",
-    "question": "Mit welchem Bundesland grenzt Bayern NICHT?",
-    "options": ["Hessen", "Thüringen", "Sachsen-Anhalt", "Baden-Württemberg"],
-    "answer": 2,
-    "explanation": "Bayern grenzt nicht an Sachsen-Anhalt."
-  },
-  {
-    "id": "by_002",
-    "category": "bayern",
-    "difficulty": "easy",
-    "question": "Was ist der höchste Berg in Bayern?",
-    "options": ["Watzmann", "Zugspitze", "Hochkalter", "Alpspitze"],
-    "answer": 1,
-    "explanation": "Die Zugspitze ist mit 2962 m der höchste Berg Deutschlands."
-  },
-  {
-    "id": "by_003",
-    "category": "bayern",
-    "difficulty": "easy",
-    "question": "Welcher See ist der größte in Bayern?",
-    "options": ["Tegernsee", "Chiemsee", "Eibsee", "Bodensee"],
-    "answer": 1,
-    "explanation": "Der Chiemsee ist der größte See, der vollständig in Bayern liegt."
-  },
-  {
-    "id": "by_004",
-    "category": "bayern",
-    "difficulty": "easy",
-    "question": "Welcher Fluss ist der längste in Bayern?",
-    "options": ["Main", "Isar", "Neckar", "Rhein"],
-    "answer": 0,
-    "explanation": "Der Main ist der längste Fluss, der vollständig durch Bayern fließt."
-  },
-  {
-    "id": "by_005",
-    "category": "bayern",
-    "difficulty": "medium",
-    "question": "Was ist der Regierungssitz von Oberbayern?",
-    "options": ["Regensburg", "München", "Augsburg", "Landshut"],
-    "answer": 1,
-    "explanation": "Der Regierungssitz von Oberbayern ist München."
-  },
-  {
-    "id": "by_006",
-    "category": "bayern",
-    "difficulty": "medium",
-    "question": "Was ist der Regierungssitz von Schwaben?",
-    "options": ["Würzburg", "Bayreuth", "Augsburg", "München"],
-    "answer": 2,
-    "explanation": "Der Regierungssitz von Schwaben ist Augsburg."
-  },
-  {
-    "id": "by_007",
-    "category": "bayern",
-    "difficulty": "medium",
-    "question": "Was ist der Regierungssitz von Mittelfranken?",
-    "options": ["Bayreuth", "Regensburg", "Ansbach", "Nürnberg"],
-    "answer": 2,
-    "explanation": "Der Regierungssitz von Mittelfranken ist Ansbach."
-  },
-  {
-    "id": "by_008",
-    "category": "bayern",
-    "difficulty": "medium",
-    "question": "Was ist der Regierungssitz von Unterfranken?",
-    "options": ["Bamberg", "Bayreuth", "Würzburg", "Ansbach"],
-    "answer": 2,
-    "explanation": "Der Regierungssitz von Unterfranken ist Würzburg."
-  },
-  {
-    "id": "by_009",
-    "category": "bayern",
-    "difficulty": "medium",
-    "question": "Was ist der Regierungssitz von Niederbayern?",
-    "options": ["Passau", "München", "Landshut", "Regensburg"],
-    "answer": 2,
-    "explanation": "Der Regierungssitz von Niederbayern ist Landshut."
-  },
-  {
-    "id": "by_010",
-    "category": "bayern",
-    "difficulty": "medium",
-    "question": "Was ist der Regierungssitz von Oberpfalz?",
-    "options": ["Amberg", "Passau", "Regensburg", "Landshut"],
-    "answer": 2,
-    "explanation": "Der Regierungssitz der Oberpfalz ist Regensburg."
-  },
-  {
-    "id": "by_011",
-    "category": "bayern",
-    "difficulty": "medium",
-    "question": "Was ist der Regierungssitz von Oberfranken?",
-    "options": ["Bamberg", "Coburg", "Würzburg", "Bayreuth"],
-    "answer": 3,
-    "explanation": "Der Regierungssitz von Oberfranken ist Bayreuth."
-  }
+    {
+        "id": "by_001",
+        "category": "bayern",
+        "difficulty": "easy",
+        "question": "Mit welchem Bundesland grenzt Bayern NICHT?",
+        "options": [
+            "Hessen",
+            "Thüringen",
+            "Sachsen-Anhalt",
+            "Baden-Württemberg"
+        ],
+        "answer": 2,
+        "explanation": "Bayern grenzt nicht an Sachsen-Anhalt.",
+        "image": false
+    },
+    {
+        "id": "by_002",
+        "category": "bayern",
+        "difficulty": "easy",
+        "question": "Was ist der höchste Berg in Bayern?",
+        "options": [
+            "Watzmann",
+            "Zugspitze",
+            "Hochkalter",
+            "Alpspitze"
+        ],
+        "answer": 1,
+        "explanation": "Die Zugspitze ist mit 2962 m der höchste Berg Deutschlands.",
+        "image": false
+    },
+    {
+        "id": "by_003",
+        "category": "bayern",
+        "difficulty": "easy",
+        "question": "Welcher See ist der größte in Bayern?",
+        "options": [
+            "Tegernsee",
+            "Chiemsee",
+            "Eibsee",
+            "Bodensee"
+        ],
+        "answer": 1,
+        "explanation": "Der Chiemsee ist der größte See, der vollständig in Bayern liegt.",
+        "image": false
+    },
+    {
+        "id": "by_004",
+        "category": "bayern",
+        "difficulty": "easy",
+        "question": "Welcher Fluss ist der längste in Bayern?",
+        "options": [
+            "Main",
+            "Isar",
+            "Neckar",
+            "Rhein"
+        ],
+        "answer": 0,
+        "explanation": "Der Main ist der längste Fluss, der vollständig durch Bayern fließt.",
+        "image": false
+    },
+    {
+        "id": "by_005",
+        "category": "bayern",
+        "difficulty": "medium",
+        "question": "Was ist der Regierungssitz von Oberbayern?",
+        "options": [
+            "Regensburg",
+            "München",
+            "Augsburg",
+            "Landshut"
+        ],
+        "answer": 1,
+        "explanation": "Der Regierungssitz von Oberbayern ist München.",
+        "image": false
+    },
+    {
+        "id": "by_006",
+        "category": "bayern",
+        "difficulty": "medium",
+        "question": "Was ist der Regierungssitz von Schwaben?",
+        "options": [
+            "Würzburg",
+            "Bayreuth",
+            "Augsburg",
+            "München"
+        ],
+        "answer": 2,
+        "explanation": "Der Regierungssitz von Schwaben ist Augsburg.",
+        "image": false
+    },
+    {
+        "id": "by_007",
+        "category": "bayern",
+        "difficulty": "medium",
+        "question": "Was ist der Regierungssitz von Mittelfranken?",
+        "options": [
+            "Bayreuth",
+            "Regensburg",
+            "Ansbach",
+            "Nürnberg"
+        ],
+        "answer": 2,
+        "explanation": "Der Regierungssitz von Mittelfranken ist Ansbach.",
+        "image": false
+    },
+    {
+        "id": "by_008",
+        "category": "bayern",
+        "difficulty": "medium",
+        "question": "Was ist der Regierungssitz von Unterfranken?",
+        "options": [
+            "Bamberg",
+            "Bayreuth",
+            "Würzburg",
+            "Ansbach"
+        ],
+        "answer": 2,
+        "explanation": "Der Regierungssitz von Unterfranken ist Würzburg.",
+        "image": false
+    },
+    {
+        "id": "by_009",
+        "category": "bayern",
+        "difficulty": "medium",
+        "question": "Was ist der Regierungssitz von Niederbayern?",
+        "options": [
+            "Passau",
+            "München",
+            "Landshut",
+            "Regensburg"
+        ],
+        "answer": 2,
+        "explanation": "Der Regierungssitz von Niederbayern ist Landshut.",
+        "image": false
+    },
+    {
+        "id": "by_010",
+        "category": "bayern",
+        "difficulty": "medium",
+        "question": "Was ist der Regierungssitz von Oberpfalz?",
+        "options": [
+            "Amberg",
+            "Passau",
+            "Regensburg",
+            "Landshut"
+        ],
+        "answer": 2,
+        "explanation": "Der Regierungssitz der Oberpfalz ist Regensburg.",
+        "image": false
+    },
+    {
+        "id": "by_011",
+        "category": "bayern",
+        "difficulty": "medium",
+        "question": "Was ist der Regierungssitz von Oberfranken?",
+        "options": [
+            "Bamberg",
+            "Coburg",
+            "Würzburg",
+            "Bayreuth"
+        ],
+        "answer": 3,
+        "explanation": "Der Regierungssitz von Oberfranken ist Bayreuth.",
+        "image": false
+    },
+    {
+        "id": "geo_1",
+        "category": "geo",
+        "difficulty": "easy",
+        "question": "Was ist das für ein Bundesland?",
+        "image": "img/Baden-Württemberg.png",
+        "options": [
+            "Sachsen-Anhalt",
+            "Schleswig-Holstein",
+            "Baden-Württemberg",
+            "Nordrhein-Westfalen"
+        ],
+        "answer": 2,
+        "explanation": "Das ist Baden-Württemberg!"
+    },
+    {
+        "id": "geo_2",
+        "category": "geo",
+        "difficulty": "easy",
+        "question": "Was ist das für ein Bundesland?",
+        "image": "img/Bavaria.png",
+        "options": [
+            "Bayern",
+            "Sachsen-Anhalt",
+            "Niedersachsen",
+            "Sachsen"
+        ],
+        "answer": 0,
+        "explanation": "Das ist Bayern!"
+    },
+    {
+        "id": "geo_3",
+        "category": "geo",
+        "difficulty": "easy",
+        "question": "Was ist das für ein Bundesland?",
+        "image": "img/Berlin.png",
+        "options": [
+            "Hamburg",
+            "Mecklenburg-Vorpommern",
+            "Sachsen-Anhalt",
+            "Berlin"
+        ],
+        "answer": 3,
+        "explanation": "Das ist Berlin!"
+    },
+    {
+        "id": "geo_4",
+        "category": "geo",
+        "difficulty": "easy",
+        "question": "Was ist das für ein Bundesland?",
+        "image": "img/Brandenburg.png",
+        "options": [
+            "Niedersachsen",
+            "Hamburg",
+            "Bayern",
+            "Brandenburg"
+        ],
+        "answer": 3,
+        "explanation": "Das ist Brandenburg!"
+    },
+    {
+        "id": "geo_5",
+        "category": "geo",
+        "difficulty": "easy",
+        "question": "Was ist das für ein Bundesland?",
+        "image": "img/Bremen.png",
+        "options": [
+            "Niedersachsen",
+            "Rheinland-Pfalz",
+            "Baden-Württemberg",
+            "Bremen"
+        ],
+        "answer": 3,
+        "explanation": "Das ist Bremen!"
+    },
+    {
+        "id": "geo_6",
+        "category": "geo",
+        "difficulty": "easy",
+        "question": "Was ist das für ein Bundesland?",
+        "image": "img/Hamburg.png",
+        "options": [
+            "Nordrhein-Westfalen",
+            "Niedersachsen",
+            "Saarland",
+            "Hamburg"
+        ],
+        "answer": 3,
+        "explanation": "Das ist Hamburg!"
+    },
+    {
+        "id": "geo_7",
+        "category": "geo",
+        "difficulty": "easy",
+        "question": "Was ist das für ein Bundesland?",
+        "image": "img/Hesse.png",
+        "options": [
+            "Hessen",
+            "Mecklenburg-Vorpommern",
+            "Baden-Württemberg",
+            "Niedersachsen"
+        ],
+        "answer": 0,
+        "explanation": "Das ist Hessen!"
+    },
+    {
+        "id": "geo_8",
+        "category": "geo",
+        "difficulty": "easy",
+        "question": "Was ist das für ein Bundesland?",
+        "image": "img/Mecklenburg-Vorpommern.png",
+        "options": [
+            "Mecklenburg-Vorpommern",
+            "Hessen",
+            "Baden-Württemberg",
+            "Brandenburg"
+        ],
+        "answer": 0,
+        "explanation": "Das ist Mecklenburg-Vorpommern!"
+    },
+    {
+        "id": "geo_9",
+        "category": "geo",
+        "difficulty": "easy",
+        "question": "Was ist das für ein Bundesland?",
+        "image": "img/Lower-Saxony.png",
+        "options": [
+            "Mecklenburg-Vorpommern",
+            "Niedersachsen",
+            "Baden-Württemberg",
+            "Nordrhein-Westfalen"
+        ],
+        "answer": 1,
+        "explanation": "Das ist Niedersachsen!"
+    },
+    {
+        "id": "geo_10",
+        "category": "geo",
+        "difficulty": "easy",
+        "question": "Was ist das für ein Bundesland?",
+        "image": "img/North_Rhine-Westphalia.png",
+        "options": [
+            "Nordrhein-Westfalen",
+            "Rheinland-Pfalz",
+            "Baden-Württemberg",
+            "Berlin"
+        ],
+        "answer": 0,
+        "explanation": "Das ist Nordrhein-Westfalen!"
+    },
+    {
+        "id": "geo_11",
+        "category": "geo",
+        "difficulty": "easy",
+        "question": "Was ist das für ein Bundesland?",
+        "image": "img/Rhineland-Palatinate.png",
+        "options": [
+            "Rheinland-Pfalz",
+            "Nordrhein-Westfalen",
+            "Brandenburg",
+            "Niedersachsen"
+        ],
+        "answer": 0,
+        "explanation": "Das ist Rheinland-Pfalz!"
+    },
+    {
+        "id": "geo_12",
+        "category": "geo",
+        "difficulty": "easy",
+        "question": "Was ist das für ein Bundesland?",
+        "image": "img/Saarland.png",
+        "options": [
+            "Thüringen",
+            "Saarland",
+            "Bayern",
+            "Rheinland-Pfalz"
+        ],
+        "answer": 1,
+        "explanation": "Das ist Saarland!"
+    },
+    {
+        "id": "geo_13",
+        "category": "geo",
+        "difficulty": "easy",
+        "question": "Was ist das für ein Bundesland?",
+        "image": "img/Saxony.png",
+        "options": [
+            "Niedersachsen",
+            "Baden-Württemberg",
+            "Sachsen",
+            "Berlin"
+        ],
+        "answer": 2,
+        "explanation": "Das ist Sachsen!"
+    },
+    {
+        "id": "geo_14",
+        "category": "geo",
+        "difficulty": "easy",
+        "question": "Was ist das für ein Bundesland?",
+        "image": "img/Saxony-Anhalt.png",
+        "options": [
+            "Sachsen-Anhalt",
+            "Mecklenburg-Vorpommern",
+            "Hamburg",
+            "Baden-Württemberg"
+        ],
+        "answer": 0,
+        "explanation": "Das ist Sachsen-Anhalt!"
+    },
+    {
+        "id": "geo_15",
+        "category": "geo",
+        "difficulty": "easy",
+        "question": "Was ist das für ein Bundesland?",
+        "image": "img/Schleswig-Holstein.png",
+        "options": [
+            "Baden-Württemberg",
+            "Sachsen-Anhalt",
+            "Berlin",
+            "Schleswig-Holstein"
+        ],
+        "answer": 3,
+        "explanation": "Das ist Schleswig-Holstein!"
+    },
+    {
+        "id": "geo_16",
+        "category": "geo",
+        "difficulty": "easy",
+        "question": "Was ist das für ein Bundesland?",
+        "image": "img/Thuringia.png",
+        "options": [
+            "Bayern",
+            "Hessen",
+            "Saarland",
+            "Thüringen"
+        ],
+        "answer": 3,
+        "explanation": "Das ist Thüringen!"
+    }
 ]

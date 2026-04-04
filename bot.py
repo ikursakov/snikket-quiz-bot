@@ -8,6 +8,7 @@ import asyncio
 import os
 import slixmpp
 import uuid
+import mimetypes
 
 CONFIG_FILE = "config.json"
 QUESTIONS_FILE = "questions.json"
@@ -84,6 +85,17 @@ class QuestionBank:
 
             if "difficulty" not in q:
                 q["difficulty"] = "normal"
+
+            if "image" not in q:
+                q["image"] = False
+            elif q["image"] is not False and not isinstance(q["image"], str):
+                raise ValueError(
+                        f"Question #{i} image must be False or a string path"
+                        )
+            elif isinstance(q["image"], str) and not q["image"].strip():
+                raise ValueError(
+                        f"Question #{i} image path must not be empty"
+                        )
 
         return data
 
@@ -471,6 +483,11 @@ class QuizBot(slixmpp.ClientXMPP):
 
         self.add_event_handler("session_start", self.session_start)
         self.add_event_handler("message", self.on_message)
+        self.register_plugin("xep_0030")
+        self.register_plugin("xep_0066")
+        self.register_plugin("xep_0363")
+
+        self.media_root = Path(".")
 
     async def session_start(self, event):
         self.send_presence()
@@ -932,13 +949,13 @@ class QuizBot(slixmpp.ClientXMPP):
         )
         lines.extend(
             [
-                "",
-                "Следующий вопрос:",
-                "",
-                self.format_question_text(next_question),
+               "",
+               "Следующий вопрос:"
             ]
         )
         self.reply(msg, "\n".join(lines))
+
+        await self.send_message_payload(msg, next_question)
 
     def format_question_text(self, question: dict) -> str:
         lines = [
@@ -991,6 +1008,49 @@ class QuizBot(slixmpp.ClientXMPP):
             return
 
         self.storage.update_session_question(username, question["id"], awaiting_answer=True)
+        await self.send_message_payload(msg, question)
+
+    def resolve_image_path(self, image_value: str) -> Path:
+        path = Path(image_value)
+        if path.is_absolute():
+            return path
+        return (self.media_root / path).resolve()
+
+    async def send_image_message(self, to_jid: str, image_path_value: str) -> None:
+        image_path = self.resolve_image_path(image_path_value)
+
+        if not image_path.exists():
+            raise FileNotFoundError(f"Image file not found: {image_path}")
+
+        content_type, _ = mimetypes.guess_type(str(image_path))
+        if not content_type:
+            content_type = "image/png"
+
+        url = await self["xep_0363"].upload_file(
+                filename=image_path,
+                content_type=content_type,
+                )
+
+        msg = self.make_message(
+                mto=to_jid,
+                mbody=url,
+                mtype="chat",
+                )
+        msg["oob"]["url"] = url
+        msg.send()
+
+    async def send_message_payload(self, msg, question: dict) -> None:
+        image_value = question.get("image", False)
+
+        if image_value:
+            try:
+                await self.send_image_message(str(msg["from"]), image_value)
+            except Exception as exc:
+                self.reply(
+                        msg,
+                        f"Не удалось отправить картинку для вопроса: {exc}"
+                        )
+
         self.reply(msg, self.format_question_text(question))
 
 
